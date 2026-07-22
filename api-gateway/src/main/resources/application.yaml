@@ -1,0 +1,65 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: API-GATEWAY
+
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/auth/**
+
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payments/**
+
+        - id: course-service
+          uri: lb://COURSE-SERVICE
+          predicates:
+            - Path=/courses/**
+
+        - id: lesson-service
+          uri: lb://COURSE-SERVICE
+          predicates:
+            - Path=/lessons/**
+
+        - id: section-service
+          uri: lb://COURSE-SERVICE
+          predicates:
+            - Path=/sections/**
+
+        - id: review-service
+          uri: lb://COURSE-SERVICE
+          predicates:
+            - Path=/reviews/**
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

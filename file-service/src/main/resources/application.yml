@@ -1,0 +1,42 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: FILE-SERVICE
+
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/file_service_db?authSource=admin
+
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+
+  cloud:
+    aws:
+      region: eu-north-1
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+      bucket: skillup-412102711151-eu-north-1-an
+
+app:
+  image-storage:
+    base-path: uploads
+    allowed-mime-types:
+      - image/jpeg
+      - image/png
+      - image/webp
+      - image/gif
+      - video/mp4
+      - video/mov
+
+
+jwt:
+  secret: ${JWT_SECRET}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

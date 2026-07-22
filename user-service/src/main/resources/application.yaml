@@ -1,0 +1,48 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: USER-SERVICE
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      properties:
+        spring.json.type.mapping: >
+          CoachProfileChangedEvent:com.skillup.user_service.model.dto.CoachProfileChangedEvent
+
+    consumer:
+      group-id: user-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.type.mapping: >
+          CourseSaleCompletedEvent:com.example.common.event.CourseSaleCompletedEvent
+
+  datasource:
+    url: jdbc:postgresql://localhost:5434/user_db
+    username: root
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  secret: ${JWT_SECRET}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    prefer-ip-address: true

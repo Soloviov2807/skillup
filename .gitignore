@@ -1,0 +1,44 @@
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Maven
+target/
+
+# Logs
+*.log
+
+# Node
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Java
+*.class
+
+# Package files
+*.jar
+*.war
+
+# Build
+build/
+out/
+
+# Temporary
+tmp/
+temp/
+
+
+file-service/data/
+file-service/mongo-data/
+.env
+.env.*
