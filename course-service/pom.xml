@@ -30,6 +30,12 @@
 		<java.version>25</java.version>
 		<spring-cloud.version>2025.1.1</spring-cloud.version>
 	</properties>
+	<repositories>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/Soloviov2807/common-events</url>
+		</repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -74,7 +80,7 @@
 		<dependency>
 			<groupId>org.example.commonevents</groupId>
 			<artifactId>common-events</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>

@@ -7,7 +7,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://root:root@localhost:27017/file_service_db?authSource=admin
+      uri: ${MONGO_DB_URI}
 
   servlet:
     multipart:
@@ -39,4 +39,4 @@ jwt:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_URL}

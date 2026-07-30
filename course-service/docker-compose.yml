@@ -6,8 +6,8 @@ services:
 
     environment:
       POSTGRES_DB: course_db
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
 
     ports:
       - "5435:5432"
@@ -15,6 +15,34 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d course_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  course-service:
+    build: .
+
+    container_name: course-service
+
+    restart: always
+
+    ports:
+      - "8083:8083"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+
+      EUREKA_URL: ${EUREKA_URL}
 
 volumes:
   postgres_data:
