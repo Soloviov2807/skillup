@@ -6,7 +6,6 @@ import com.skillup.user_service.model.User;
 import com.skillup.user_service.model.UserPrincipal;
 import com.skillup.user_service.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;

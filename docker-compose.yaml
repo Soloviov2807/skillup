@@ -1,0 +1,214 @@
+services:
+
+  # ==========================
+  # DATABASES
+  # ==========================
+
+  user-postgres:
+    image: postgres:15
+    container_name: user-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: ${USER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${USER_DB_PASSWORD}
+    volumes:
+      - user-db:/var/lib/postgresql/data
+
+  course-postgres:
+    image: postgres:15
+    container_name: course-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: course_db
+      POSTGRES_USER: ${COURSE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${COURSE_DB_PASSWORD}
+    volumes:
+      - course-db:/var/lib/postgresql/data
+
+  payment-postgres:
+    image: postgres:15
+    container_name: payment-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: payment_db
+      POSTGRES_USER: ${PAYMENT_DB_USERNAME}
+      POSTGRES_PASSWORD: ${PAYMENT_DB_PASSWORD}
+    volumes:
+      - payment-db:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - mongo-data:/data/db
+
+  # ==========================
+  # KAFKA
+  # ==========================
+
+  kafka:
+    image: confluentinc/cp-kafka:7.7.1
+    container_name: kafka
+    restart: unless-stopped
+
+    ports:
+      - "9092:9092"
+
+    environment:
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+  # ==========================
+  # EUREKA
+  # ==========================
+
+  service-registry:
+    build: ./service-registry
+    container_name: service-registry
+
+    ports:
+      - "8761:8761"
+
+  # ==========================
+  # USER SERVICE
+  # ==========================
+
+  user-service:
+    build: ./user-service
+
+    depends_on:
+      - user-postgres
+      - kafka
+      - service-registry
+
+    ports:
+      - "8081:8081"
+
+    environment:
+      USER_DB_URL: ${USER_DB_URL}
+      USER_DB_USERNAME: ${USER_DB_USERNAME}
+      USER_DB_PASSWORD: ${USER_DB_PASSWORD}
+
+      JWT_SECRET: ${JWT_SECRET}
+      EUREKA_URL: ${EUREKA_URL}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+
+  # ==========================
+  # COURSE SERVICE
+  # ==========================
+
+  course-service:
+    build: ./course-service
+
+    depends_on:
+      - course-postgres
+      - kafka
+      - service-registry
+
+    ports:
+      - "8083:8083"
+
+    environment:
+      COURSE_DB_URL: ${COURSE_DB_URL}
+      COURSE_DB_USERNAME: ${COURSE_DB_USERNAME}
+      COURSE_DB_PASSWORD: ${COURSE_DB_PASSWORD}
+
+      JWT_SECRET: ${JWT_SECRET}
+      EUREKA_URL: ${EUREKA_URL}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+
+  # ==========================
+  # PAYMENT SERVICE
+  # ==========================
+
+  payment-service:
+    build: ./payment-service
+
+    depends_on:
+      - payment-postgres
+      - kafka
+      - service-registry
+
+    ports:
+      - "8085:8085"
+
+    environment:
+      PAYMENT_DB_URL: ${PAYMENT_DB_URL}
+      PAYMENT_DB_USERNAME: ${PAYMENT_DB_USERNAME}
+      PAYMENT_DB_PASSWORD: ${PAYMENT_DB_PASSWORD}
+
+      JWT_SECRET: ${JWT_SECRET}
+      EUREKA_URL: ${EUREKA_URL}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+
+  # ==========================
+  # FILE SERVICE
+  # ==========================
+
+  file-service:
+    build: ./file-service
+
+    depends_on:
+      - mongodb
+      - service-registry
+
+    ports:
+      - "8082:8082"
+
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      EUREKA_URL: ${EUREKA_URL}
+
+      MONGO_DB_URI: ${MONGO_DB_URI}
+
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+
+  # ==========================
+  # API GATEWAY
+  # ==========================
+
+  api-gateway:
+    build: ./api-gateway
+
+    depends_on:
+      - service-registry
+      - user-service
+      - course-service
+      - payment-service
+      - file-service
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      EUREKA_URL: ${EUREKA_URL}
+
+volumes:
+  user-db:
+  course-db:
+  payment-db:
+  mongo-data:

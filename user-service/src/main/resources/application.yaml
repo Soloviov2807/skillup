@@ -6,7 +6,7 @@ spring:
     name: USER-SERVICE
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_SERVERS}
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -28,9 +28,9 @@ spring:
           CourseSaleCompletedEvent:com.example.common.event.CourseSaleCompletedEvent
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${USER_DB_URL}
+    username: ${USER_DB_USERNAME}
+    password: ${USER_DB_PASSWORD}
 
   jpa:
     hibernate:

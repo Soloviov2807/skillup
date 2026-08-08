@@ -78,7 +78,7 @@ public class FileService {
             if(fileId != null){
                 fileClient.deleteFileById(getAuthHeader(), fileId);
             }
-        } catch (Exception _) {
+        } catch (Exception e) {
         }
 
     }
