@@ -78,12 +78,8 @@ public class StripeService {
                 .putMetadata("paymentId", payment.getId().toString())
                 .putMetadata("courseId", String.valueOf(courseId))
                 .putMetadata("userId", String.valueOf(userId))
-                .setSuccessUrl(
-                        "http://localhost:5173/payment-success"
-                )
-                .setCancelUrl(
-                        "http://localhost:5173/payment-cancel"
-                )
+                .setSuccessUrl("http://16.170.166.106/payment-success")
+                .setCancelUrl("http://16.170.166.106/payment-cancel")
                 .addLineItem(
                         SessionCreateParams.LineItem
                                 .builder()
