@@ -41,8 +41,6 @@ public class LessonService {
         lesson.setSection(section);
         lesson.setName(lessonRequest.name());
 
-        validate(video);
-
 
 
         String videoId = fileService.uploadVideoOrThrow(video);
@@ -61,23 +59,7 @@ public class LessonService {
     }
 
 
-    private void validate(MultipartFile video){
 
-        String mimeType = video.getContentType();
-        String fileName = video.getOriginalFilename().toLowerCase();
-
-        if(video == null || video.isEmpty()){
-            throw new RuntimeException("File is empty");
-        }
-
-        if (mimeType == null || !mimeType.startsWith("video/")){
-            throw new RuntimeException("File must be a video");
-        }
-
-        if(fileName == null || !(fileName.endsWith(".mp4") || fileName.endsWith(".mov"))){
-            throw new RuntimeException("Invalid video format");
-        }
-    }
 
 
     public LessonResponse getLesson(long lessonId) {
