@@ -1,16 +1,15 @@
 package com.skillup.user_service.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillup.user_service.model.JwtUserPrincipal;
 import com.skillup.user_service.model.dto.*;
+import com.skillup.user_service.service.OAuthLoginCodeService;
 import com.skillup.user_service.service.UserService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +26,7 @@ public class UserController {
 
     private final UserService service;
     private final ObjectMapper objectMapper;
+    private final OAuthLoginCodeService oauthLoginCodeService;
 
     @PostMapping("/register")
     @Transactional
@@ -46,6 +46,18 @@ public class UserController {
         String jwtToken = service.login(loginRequest);
 
         return ResponseEntity.ok(new LoginResponse(jwtToken));
+    }
+
+    @PostMapping("/oauth/exchange")
+    public ResponseEntity<LoginResponse> exchangeOAuthCode(
+            @RequestParam String code
+    ) {
+
+        String jwt = oauthLoginCodeService.exchangeCode(code);
+
+        return ResponseEntity.ok(
+                new LoginResponse(jwt)
+        );
     }
 
 
